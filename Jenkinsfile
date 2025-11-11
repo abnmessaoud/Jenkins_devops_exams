@@ -13,7 +13,7 @@ stages {
       }    
       steps {
         sh '''
-            docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+            docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG cast-service
             docker login -u $DOCKER_ID -p $DOCKER_PASS
             docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
         '''    
