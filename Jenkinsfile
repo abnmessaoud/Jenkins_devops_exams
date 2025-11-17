@@ -26,9 +26,7 @@ stages {
       }
       steps {  
         sh '''
-        rm -Rf .kube
-        mkdir .kube
-        cat $KUBECONFIG > .kube/config
+        export KUBECONFIG=$KUBECONFIG
         cp charts/values.yaml values.yml
         sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
         helm upgrade --install app charts --values=values.yml --namespace dev
