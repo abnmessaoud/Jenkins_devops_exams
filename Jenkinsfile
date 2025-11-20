@@ -51,14 +51,14 @@ stages {
     }
 
     stage('Approbation manuelle pour la production') {
-      when { branch 'master' }
       steps {
-        input message: "Deploy ${IMAGE_TAG} to PRODUCTION?", ok: 'Deploy to Prod'
+        timeout(time: 15, unit: "MINUTES") {
+          input message: "Deploy ${IMAGE_TAG} to PRODUCTION?", ok: 'Deploy to Prod'
+        }
       }
     }
 
     stage('Deploiement en PROD') {
-      when { branch 'master' }
       environment {
       KUBECONFIG = credentials("config") // we retrieve  kubeconfig from secret file called config saved on jenkins
       }
