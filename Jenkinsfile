@@ -50,27 +50,24 @@ stages {
       }
     }
 
-    stage('Approbation manuelle pour la production') {
-      steps {
-        timeout(time: 15, unit: "MINUTES") {
-          input message: "Deploy ${IMAGE_TAG} to PRODUCTION?", ok: 'Deploy to Prod'
-        }
-      }
-    }
-
     stage('Deploiement en PROD') {
       environment {
       KUBECONFIG = credentials("config") // we retrieve  kubeconfig from secret file called config saved on jenkins
       }
       steps {
-        sh '''
-        rm -Rf .kube
-        mkdir .kube
-        cat $KUBECONFIG > .kube/config
-        cp charts/values.yaml values.yml
-        sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
-        helm upgrade --install app charts --values=values.yml --namespace prod
-        '''
+        timeout(time: 15, unit: "MINUTES") {
+          input message: 'Do you want to deploy in production ?', ok: 'Yes'
+        }
+        script {
+          sh '''
+          rm -Rf .kube
+          mkdir .kube
+          cat $KUBECONFIG > .kube/config
+          cp charts/values.yaml values.yml
+          sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
+          helm upgrade --install app charts --values=values.yml --namespace prod
+          '''
+        }
       }
     }
   }
